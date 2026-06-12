@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>NumberGuess Game</title>
+    <style>
+        body{
+            background-color: #000B26;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color:#001f3f;
+            display:flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap:1rem;
+            width:40%;
+            padding : 5px;
+            border : 2px solid #33ccff;
+           box-shadow:
+                0 0 10px rgba(51, 204, 255, 0.4),
+                0 0 20px rgba(51, 204, 255, 0.2),
+                0 8px 25px rgba(0, 0, 0, 0.4);
+            border-radius: 5px;
+            text-align: justify;
+
+            position: absolute;
+            top:10%;
+            left:50%;
+            transform:translateX(-50%);
+        }
+        #output,h1,th,td{
+            color:white;
+        }
+        #output{
+            font-size:20px;
+            gap:1rem;
+            text-align: center;
+        }
+        .range{
+            display: flex;
+            justify-content: center;
+            gap:2rem;
+        }
+        input,button{
+            background-color:#004c54;
+            border: 2px solid #33ccff;
+            border-radius: 5px;
+            color:white;
+            outline:none;
+            padding:5px 10px;
+        }
+        button:hover{
+            background-color:#3ab09e;
+        }
+        .inputfield{
+            width:20%;
+        }
+        .tables{
+            display:flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: flex-start;
+        } 
+        th{
+            background-color: #004c54;
+            padding: 5px;
+        }
+        th,td{
+            padding: 5px;
+            text-align: center;
+            border:1px solid #0d98ba;
+            border-collapse:collapse;
+        }
+        #playagain {
+            background-color: darkgreen;
+            padding:10px 10px;
+        }
+        #playagain:hover{
+            background-color:#02b126;
+        }
+        .modes{
+            display:flex;
+            gap:1rem;
+        }
+    </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Guess My Number</h1>
+            <div class="modes">
+                <button id="easy" class="gamemode" onclick="mode(this)">Easy</button>
+                <button id="medium" class="gamemode" onclick="mode(this)">Medium</button>
+                <button id="difficult" class="gamemode" onclick="mode(this)">Difficult</button>
+            </div>
+            <div class="range">
+                <input type="number" id="num1" class="inputfield" placeholder="Enter Start Range" value="1">
+                <input type="number" id="num2" class="inputfield" placeholder="Enter End Range" value="100">
+            </div>
+            <button onclick="setRange()">Enter Range</button>
+            <div id="output">
+                <p>You have 15 attempts</p>
+            </div>
+            <div style="display:flex;gap:1rem;">
+                <input type="number" id="guess" placeholder="What will be my Number??">
+                <button id="guessbtn" onclick="guessfn()">Guess</button>
+            </div>
+            <div class="tables">
+                <table id="table1">
+                    <tr>
+                        <th>Low Numbers</th>
+                    </tr>
+                </table>
+                <table id="table2">
+                    <tr>
+                        <th>High Numbers</th>
+                    </tr>
+                </table>
+            </div>
+            <button  onclick="location.reload()" id="playagain">Play Again</button>
+        </div>
+    </body>
+    <script>
+        let randomnum;
+        let attempts = 0;
+        let low = [];
+        let high = [];
+        let totalattempts = 15;
+        let rem = totalattempts;
+        let startnum = Number(document.getElementById('num1').value);
+        let endnum = Number(document.getElementById('num2').value);
+        randomnum = Math.floor(Math.random()*(endnum-startnum+1))+startnum;
+        function mode(element){
+            if(element.id=='easy') {
+                totalattempts = 15;
+                document.getElementById('output').innerHTML = `You have ${totalattempts} attempts`;
+            }
+            else if(element.id=='medium') {
+                totalattempts = 10;
+                document.getElementById('output').innerHTML = `You have ${totalattempts} attempts`;
+            }
+            else {
+                totalattempts = 5;
+                document.getElementById('output').innerHTML = `You have ${totalattempts} attempts`;
+            }
+        }
+        function setRange(){
+            startnum = Number(document.getElementById('num1').value);
+            endnum = Number(document.getElementById('num2').value);
+            randomnum = Math.floor(Math.random()*(endnum-startnum+1))+startnum;
+            if(startnum >= endnum)
+                document.getElementById('output').innerHTML = 'Please Enter Valid Range.'
+            attempts=0;
+            document.getElementById("num1").disabled = true;
+            document.getElementById("num2").disabled = true;
+        }
+        document.getElementById('guess').addEventListener('keydown',
+        function(event) {
+            if(rem<=0)
+                document.getElementById('guess').disabled=true;
+            if(event.key=="Enter")
+                guessfn();
+        })
+        function guessfn() {
+            let guessnum = Number(document.getElementById('guess').value);
+            let result =  document.getElementById('output');
+            document.querySelectorAll('.gamemode').forEach(element=>element.disabled = true);
+            if(guessnum=="") {
+                result.innerHTML="Invalid Input!!! Enter Guess Number";
+                return;
+            }
+            if(guessnum < startnum || guessnum > endnum) {
+                result.innerHTML="Please Enter Guess Number in the Range";
+                return;
+            }
+            if(low.includes(guessnum) || high.includes(guessnum)) {
+                result.innerHTML="You have already entered this number.";
+                return;
+            }
+            let lowvalue = document.getElementById('table1');
+            let highvalue = document.getElementById('table2');
+            attempts++;
+            rem = totalattempts-attempts;
+            if(rem==0) {
+                result.innerHTML=`<p>Sorry... You Lost the Game</p><p>Guess Number is ${randomnum}</p>`;
+                guessnum.disabled = true;
+                document.getElementById('guessbtn').disabled=true;
+                return;
+            }
+            console.log(attempts);
+                if(guessnum < randomnum) {
+                    result.innerHTML = `<p>You have ${rem} attempts left</p>My number is greater than ${guessnum}. Try again`;
+                    low.push(guessnum);
+                    console.log("Low : "+low);
+                    let row = document.createElement("tr");
+                    lowvalue.appendChild(row);
+                    let lowval = document.createElement("td");
+                    lowval.innerHTML = `${guessnum}`;  
+                    row.appendChild(lowval);
+                }
+                else if(guessnum > randomnum){
+                    result.innerHTML = `<p>You have ${rem} attempts left</p>My number is lower than ${guessnum}. Try again`;
+                    high.push(guessnum);
+                    console.log("High: "+high);
+                    let row = document.createElement("tr");
+                    highvalue.appendChild(row);
+                    let highval = document.createElement("td");
+                    highval.innerHTML = `${guessnum}`;  
+                    row.appendChild(highval);
+                }
+                else{
+                    result.innerHTML = `<p>Congratulations!!!You Won.</p>
+                     You have taken ${attempts} attempts`;
+                    guessnum.disabled = true;
+                    document.getElementById('guessbtn').disabled=true;
+                }
+        }
+    </script>
+</html>
