@@ -4,7 +4,7 @@ An interactive web-based Number Guessing Game built using **HTML, CSS, and JavaS
 
 ---
 
-## 📸 Screenshot
+## 📸 Preview
 
 ![Guess My Number Game](screenshots/output.png)
 
